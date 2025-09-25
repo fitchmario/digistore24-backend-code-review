@@ -14,14 +14,20 @@ use Symfony\Component\Uid\Uuid;
 class MessageRepositoryTest extends KernelTestCase
 {
     private EntityManagerInterface $em;
-    private MessageRepository $repository;
+    private MessageRepositoryInterface $repository;
 
     protected function setUp(): void
     {
         self::bootKernel();
+        $container = static::getContainer();
 
-        $this->em = self::getContainer()->get(EntityManagerInterface::class);
-        $this->repository = self::getContainer()->get(MessageRepositoryInterface::class);
+        /** @var EntityManagerInterface $em */
+        $em = $container->get(EntityManagerInterface::class);
+        $this->em = $em;
+
+        /** @var MessageRepositoryInterface $repo */
+        $repo = $container->get(MessageRepositoryInterface::class);
+        $this->repository = $repo;
 
         $connection = $this->em->getConnection();
         $platform   = $connection->getDatabasePlatform();

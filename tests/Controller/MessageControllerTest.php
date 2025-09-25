@@ -7,9 +7,6 @@ namespace App\Tests\Controller;
 use App\Enum\MessageStatusEnum;
 use App\Message\Command\SendMessage;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Zenstruck\Messenger\Test\InteractsWithMessenger;
 
 class MessageControllerTest extends WebTestCase
@@ -24,6 +21,7 @@ class MessageControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'application/json');
 
+        // @phpstan-ignore-next-line
         $messagesCollection = json_decode($client->getResponse()->getContent(), true);
         $this->assertIsArray($messagesCollection, 'Response should be a JSON array');
 
@@ -45,6 +43,7 @@ class MessageControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'application/json');
 
+        // @phpstan-ignore-next-line
         $messagesCollection = json_decode($client->getResponse()->getContent(), true);
         $this->assertIsArray($messagesCollection, 'Response should be a JSON array');
 
@@ -73,13 +72,19 @@ class MessageControllerTest extends WebTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
+            // @phpstan-ignore-next-line
             json_encode(['text' => 'Hello World'])
         );
 
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
 
+        // @phpstan-ignore-next-line
         $data = json_decode($client->getResponse()->getContent(), true);
+
+        if(is_array($data) === false) {
+            $this->fail('Response should be an array');
+        }
 
         $this->assertArrayHasKey('uuid', $data, 'Response must contain uuid');
 
@@ -98,7 +103,7 @@ class MessageControllerTest extends WebTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([]) // no text field
+            json_encode([], JSON_THROW_ON_ERROR) // no text field
         );
 
         $this->assertResponseStatusCodeSame(422);
