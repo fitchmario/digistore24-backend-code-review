@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
-use App\Message\SendMessage;
+use App\Message\Command\SendMessage;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Messenger\Test\InteractsWithMessenger;
 

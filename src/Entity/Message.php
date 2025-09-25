@@ -8,6 +8,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MessageRepository::class)]
+#[ORM\HasLifecycleCallbacks()]
 /**
  * TODO: Review Message class
  */
@@ -16,7 +17,7 @@ class Message
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\Column(type: Types::GUID)]
     private ?string $uuid = null;
@@ -76,10 +77,9 @@ class Message
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTime $createdAt): static
+    #[ORM\PrePersist]
+    public function prePersist(): void
     {
-        $this->createdAt = $createdAt;
-        
-        return $this;
+        $this->createdAt = new DateTime();
     }
 }

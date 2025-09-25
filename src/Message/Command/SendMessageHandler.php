@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Message;
+namespace App\Message\Command;
 
 use App\Entity\Message;
 use Doctrine\ORM\EntityManagerInterface;
