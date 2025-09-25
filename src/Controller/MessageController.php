@@ -3,44 +3,35 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Enum\MessageStatusEnum;
 use App\Message\Command\SendMessage;
-use App\Repository\MessageRepository;
-use Controller\MessageControllerTest;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Message\Query\GetAllMessagesQuery;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 
 /**
  * @see MessageControllerTest
  * TODO: review both methods and also the `openapi.yaml` specification
  *       Add Comments for your Code-Review, so that the developer can understand why changes are needed.
  */
-class MessageController extends AbstractController
+class MessageController extends BaseController
 {
     /**
      * TODO: cover this method with tests, and refactor the code (including other files that need to be refactored)
      */
     #[Route('/messages')]
     public function list(
-        Request $request,
-        MessageRepository $messages
+        #[MapQueryParameter] ?MessageStatusEnum $status = null,
     ): Response
     {
-        $messages = $messages->by($request);
-  
-        foreach ($messages as $key=>$message) {
-            $messages[$key] = [
-                'uuid' => $message->getUuid(),
-                'text' => $message->getText(),
-                'status' => $message->getStatus(),
-            ];
-        }
-        
-        return new Response(json_encode([
-            'messages' => $messages,
-        ], JSON_THROW_ON_ERROR), headers: ['Content-Type' => 'application/json']);
+        $response = $this->ask(
+            new GetAllMessagesQuery($status)
+        );
+
+        return $this->json($response);
     }
 
     #[Route('/messages/send', methods: ['GET'])]
