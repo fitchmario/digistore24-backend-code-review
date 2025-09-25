@@ -60,18 +60,44 @@ class MessageControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(400);
     }
-    
-    function test_that_it_sends_a_message(): void
+
+    public function test_it_sends_a_message(): void
     {
         $client = static::createClient();
-        $client->request('GET', '/messages/send', [
-            'text' => 'Hello World',
-        ]);
+        $client->request(
+            'POST',
+            '/messages',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode(['text' => 'Hello World'])
+        );
 
         $this->assertResponseIsSuccessful();
-        // This is using https://packagist.org/packages/zenstruck/messenger-test
+        $this->assertResponseStatusCodeSame(200);
+
+        $data = json_decode($client->getResponse()->getContent(), true);
+
+        $this->assertArrayHasKey('uuid', $data, 'Response must contain uuid');
+
+        // Ensure message was dispatched
         $this->transport('sync')
             ->queue()
             ->assertContains(SendMessage::class, 1);
+    }
+
+    public function test_it_fails_without_text(): void
+    {
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            '/messages',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([]) // no text field
+        );
+
+        $this->assertResponseStatusCodeSame(400);
     }
 }

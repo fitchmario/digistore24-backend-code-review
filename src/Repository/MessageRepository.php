@@ -6,15 +6,9 @@ use App\Entity\Message;
 use App\Enum\MessageStatusEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @extends ServiceEntityRepository<Message>
- *
- * @method Message|null find($id, $lockMode = null, $lockVersion = null)
- * @method Message|null findOneBy(array $criteria, array $orderBy = null)
- * @method Message[]    findAll()
- * @method Message[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class MessageRepository extends ServiceEntityRepository implements MessageRepositoryInterface
 {
@@ -36,5 +30,14 @@ class MessageRepository extends ServiceEntityRepository implements MessageReposi
         }
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function save(Message $message): void
+    {
+        $this->getEntityManager()->persist($message);
+        $this->getEntityManager()->flush();
     }
 }

@@ -13,50 +13,76 @@ paths:
           description: Filter messages by status
           required: false
           schema:
-            type: "string"
+            type: string
             enum:
-              - "sent"
-              - "read"
+              - sent
+              - read
       responses:
         '200':
-          description: Successful response
+          description: Successful response, a list of messages is returned
           content:
             application/json:
               schema:
-                type: "object"
+                type: object
                 properties:
                   messages:
-                    type: "array"
+                    type: array
                     items:
-                      type: "object"
-                      properties:
-                        uuid: 
-                          type: "string"
-                        text:
-                          type: "string"
-                        status:
-                          type: "string"
-                          enum:
-                            - "sent"
-                            - "read"
+                      $ref: '#/components/schemas/Message'
               example:
                 messages:
                   - text: "Hello, World!"
                     status: "read"
+                    uuid: "1f099ef6-f198-64b8-8abc-1f4df5a3bc42"
                   - text: "How are you today?"
                     status: "sent"
+                    uuid: "1f099ef6-f199-643a-b6a8-1f4df5a3bc42"
                   - text: "Thanks, I'm fine. How about you?"
                     status: "sent"
-  /messages/send:
-    get:
+                    uuid: "1f099f1e-48e3-6318-a993-8f585faf4d6f"
+        '400':
+          description: Invalid status parameter
+    post:
       summary: Send a Message
-      parameters:
-        - name: text
-          in: query
-          description: The text you want to send
-          required: true
-          schema:
-            type: "string"
+      description: Creates and dispatches a new message.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                  description: The text you want to send
+                  example: "This message for send"
+              required:
+                - text
       responses:
-        '204':
-          description: Successfully sent
+        '200':
+          description: Message created successfully. Message uuid is returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uuid:
+                    type: string
+                    format: uuid
+              example:
+                uuid: "1f099f35-e399-63dc-9b24-ff34b73edcb9"
+components:
+  schemas:
+    Message:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        text:
+          type: string
+        status:
+          type: string
+          enum:
+            - sent
+            - read

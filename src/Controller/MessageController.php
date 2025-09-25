@@ -6,9 +6,9 @@ namespace App\Controller;
 use App\Enum\MessageStatusEnum;
 use App\Message\Command\SendMessage;
 use App\Message\Query\GetAllMessagesQuery;
-use Symfony\Component\HttpFoundation\Request;
+use App\Presentation\Model\UuidModel;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 
@@ -19,10 +19,7 @@ use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
  */
 class MessageController extends BaseController
 {
-    /**
-     * TODO: cover this method with tests, and refactor the code (including other files that need to be refactored)
-     */
-    #[Route('/messages')]
+    #[Route('/messages', methods: ['GET'])]
     public function list(
         #[MapQueryParameter] ?MessageStatusEnum $status = null,
     ): Response
@@ -34,17 +31,17 @@ class MessageController extends BaseController
         return $this->json($response);
     }
 
-    #[Route('/messages/send', methods: ['GET'])]
-    public function send(Request $request, MessageBusInterface $bus): Response
+    #[Route('/messages', methods: ['POST'])]
+    public function send(
+        #[MapRequestPayload] SendMessage $sendMessage,
+    ): Response
     {
-        $text = $request->query->get('text');
+        $this->messageBus->dispatch($sendMessage);
         
-        if (!$text) {
-            return new Response('Text is required', 400);
-        }
-
-        $bus->dispatch(new SendMessage($text));
-        
-        return new Response('Successfully sent', 204);
+        return $this->json(
+            new UuidModel(
+                $sendMessage->getUuid(),
+            )
+        );
     }
 }
