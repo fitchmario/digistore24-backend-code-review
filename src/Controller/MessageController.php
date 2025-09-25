@@ -24,7 +24,10 @@ class MessageController extends AbstractController
      * TODO: cover this method with tests, and refactor the code (including other files that need to be refactored)
      */
     #[Route('/messages')]
-    public function list(Request $request, MessageRepository $messages): Response
+    public function list(
+        Request $request,
+        MessageRepository $messages
+    ): Response
     {
         $messages = $messages->by($request);
   
