@@ -40,7 +40,7 @@ paths:
                   - text: "Thanks, I'm fine. How about you?"
                     status: "sent"
                     uuid: "1f099f1e-48e3-6318-a993-8f585faf4d6f"
-        '400':
+        '404':
           description: Invalid status parameter
     post:
       summary: Send a Message
