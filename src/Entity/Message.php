@@ -15,6 +15,7 @@ class Message
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    /** @phpstan-ignore-next-line */
     private int $id;
 
     #[ORM\Column(type: Types::GUID)]
@@ -33,7 +34,7 @@ class Message
         string $uuid,
         string $text,
         MessageStatusEnum $status
-    )
+    ): self
     {
         $self = new self();
         $self->setUuid($uuid);
@@ -48,7 +49,7 @@ class Message
         return $this->id;
     }
 
-    public function getUuid(): ?string
+    public function getUuid(): string
     {
         return $this->uuid;
     }

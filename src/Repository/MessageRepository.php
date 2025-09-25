@@ -22,14 +22,18 @@ class MessageRepository extends ServiceEntityRepository implements MessageReposi
      */
     public function getAllByStatus(?MessageStatusEnum $messageStatusEnum): array
     {
-        $qb = $this->createQueryBuilder('m');
+        $qb = $this->createQueryBuilder('m')
+        ->orderBy('m.createdAt', 'DESC');
 
         if ($messageStatusEnum !== null) {
-            $qb->andWhere('m.status = :status')
+            $qb->andWhere('m.status LIKE :status')
                 ->setParameter('status', $messageStatusEnum->value);
         }
 
-        return $qb->getQuery()->getResult();
+        /** @var Message[] $messages */
+        $messages = $qb->getQuery()->getResult();
+
+        return $messages;
     }
 
     /**

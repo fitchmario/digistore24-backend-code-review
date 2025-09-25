@@ -20,6 +20,9 @@ class MessageCollection
         $this->messages[] = $message;
     }
 
+    /**
+     * @return MessageModel[]
+     */
     public function getMessages(): array
     {
         return $this->messages;

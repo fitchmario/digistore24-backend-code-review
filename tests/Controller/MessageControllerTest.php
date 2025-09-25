@@ -7,6 +7,9 @@ namespace App\Tests\Controller;
 use App\Enum\MessageStatusEnum;
 use App\Message\Command\SendMessage;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Zenstruck\Messenger\Test\InteractsWithMessenger;
 
 class MessageControllerTest extends WebTestCase
@@ -53,12 +56,12 @@ class MessageControllerTest extends WebTestCase
         }
     }
 
-    public function test_list_with_invalid_enum_status_returns_bad_request(): void
+    public function test_list_with_invalid_enum_status_returns_not_found(): void
     {
         $client = static::createClient();
         $client->request('GET', '/messages?status=does-not-exist');
 
-        $this->assertResponseStatusCodeSame(400);
+        $this->assertResponseStatusCodeSame(404);
     }
 
     public function test_it_sends_a_message(): void
@@ -98,6 +101,6 @@ class MessageControllerTest extends WebTestCase
             json_encode([]) // no text field
         );
 
-        $this->assertResponseStatusCodeSame(400);
+        $this->assertResponseStatusCodeSame(422);
     }
 }

@@ -18,8 +18,8 @@ class AppFixtures extends Fixture
         $faker = Factory::create();
 
         $messageStatus = [
-            MessageStatusEnum::SENT->value,
-            MessageStatusEnum::READ->value,
+            MessageStatusEnum::SENT,
+            MessageStatusEnum::READ,
         ];
         
         foreach (range(1, 10) as $i) {

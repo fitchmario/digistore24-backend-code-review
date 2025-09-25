@@ -12,7 +12,7 @@ interface MessageRepositoryInterface
     /**
      * @return Message[]
      */
-    public function getAllByStatus(MessageStatusEnum $messageStatusEnum): array;
+    public function getAllByStatus(?MessageStatusEnum $messageStatusEnum): array;
 
     public function save(Message $message): void;
 }
